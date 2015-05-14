@@ -165,7 +165,7 @@ QToolBox {
             <number>0</number>
            </property>
            <property name="tabSpacing">
-            <number>1</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="model">
             <property name="geometry">
@@ -173,7 +173,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>507</height>
+              <height>425</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -190,13 +190,6 @@ QToolBox {
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
-              <widget class="QPushButton" name="model_clear_button">
-               <property name="text">
-                <string>Clear model...</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QPushButton" name="model_load_button">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -206,6 +199,13 @@ QToolBox {
                </property>
                <property name="text">
                 <string>Load model...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="model_clear_button">
+               <property name="text">
+                <string>Clear model...</string>
                </property>
               </widget>
              </item>
@@ -230,7 +230,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>507</height>
+              <height>425</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -266,8 +266,8 @@ QToolBox {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>228</width>
-              <height>507</height>
+              <width>207</width>
+              <height>443</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -467,13 +467,106 @@ QToolBox {
              </item>
             </layout>
            </widget>
+           <widget class="QWidget" name="time">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>228</width>
+              <height>425</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>Time</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="QPushButton" name="time_autorange_button">
+               <property name="text">
+                <string>Autorange time</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="frame_2">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QFormLayout" name="formLayout_4">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="time_minimum_label">
+                  <property name="text">
+                   <string>Minimum:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="time_minimum_lineedit"/>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="time_maximum_label">
+                  <property name="text">
+                   <string>Maximum:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="time_maximum_lineedit"/>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="time_text_lineedit"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="time_text_label">
+                  <property name="text">
+                   <string>Time:</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="time_slider">
+               <property name="maximum">
+                <number>10000</number>
+               </property>
+               <property name="singleStep">
+                <number>10</number>
+               </property>
+               <property name="pageStep">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
            <widget class="QWidget" name="rendering">
             <property name="geometry">
              <rect>
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>507</height>
+              <height>425</height>
              </rect>
             </property>
             <attribute name="label">
@@ -534,6 +627,107 @@ QToolBox {
              </item>
              <item>
               <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="data_colouring">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>228</width>
+              <height>425</height>
+             </rect>
+            </property>
+            <attribute name="label">
+             <string>Data Colouring</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QPushButton" name="spectrum_autorange_button">
+               <property name="text">
+                <string>Autorange spectrum</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="frame">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QFormLayout" name="formLayout_3">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="spectrum_minimum_label">
+                  <property name="text">
+                   <string>Minimum:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="spectrum_minimum_lineedit"/>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="spectrum_maximum_lineedit"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="spectrum_maximum_label">
+                  <property name="text">
+                   <string>Maximum:</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="spectrum_add_colour_bar_button">
+               <property name="text">
+                <string>Add colour bar</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="output">
+            <attribute name="label">
+             <string>Output</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QPushButton" name="save_image_button">
+               <property name="text">
+                <string>Save image...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_6">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -876,6 +1070,166 @@ QToolBox {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>spectrum_autorange_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumAutorangeClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spectrum_minimum_lineedit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumMinimumEntered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spectrum_maximum_lineedit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumMaximumEntered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>256</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spectrum_add_colour_bar_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumAddColourBarClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>410</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>time_autorange_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>timeAutorangeClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>155</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>time_minimum_lineedit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ZincView</receiver>
+   <slot>timeMinimumEntered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>time_maximum_lineedit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ZincView</receiver>
+   <slot>timeMaximumEntered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>228</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>time_text_lineedit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ZincView</receiver>
+   <slot>timeTextEntered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>257</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>time_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ZincView</receiver>
+   <slot>timeSliderChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>saveImageClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>modelLoad()</slot>
@@ -897,5 +1251,15 @@ QToolBox {
   <slot>tessellationCircleDivisionsDisplay()</slot>
   <slot>perturbLinesStateChanged(bool)</slot>
   <slot>modelClear()</slot>
+  <slot>spectrumAutorangeClicked()</slot>
+  <slot>spectrumMinimumEntered()</slot>
+  <slot>spectrumMaximumEntered()</slot>
+  <slot>spectrumAddColourBarClicked()</slot>
+  <slot>timeAutorangeClicked()</slot>
+  <slot>timeMinimumEntered()</slot>
+  <slot>timeMaximumEntered()</slot>
+  <slot>timeTextEntered()</slot>
+  <slot>timeSliderChanged(int)</slot>
+  <slot>saveImageClicked()</slot>
  </slots>
 </ui>
