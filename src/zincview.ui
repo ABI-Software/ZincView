@@ -197,7 +197,7 @@ QToolBox {
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="model_read_button">
+              <widget class="QPushButton" name="model_load_button">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -205,7 +205,7 @@ QToolBox {
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Read model...</string>
+                <string>Load model...</string>
                </property>
               </widget>
              </item>
@@ -468,6 +468,14 @@ QToolBox {
             </layout>
            </widget>
            <widget class="QWidget" name="rendering">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>228</width>
+              <height>507</height>
+             </rect>
+            </property>
             <attribute name="label">
              <string>Rendering</string>
             </attribute>
@@ -597,10 +605,10 @@ QToolBox {
    </hints>
   </connection>
   <connection>
-   <sender>model_read_button</sender>
+   <sender>model_load_button</sender>
    <signal>clicked()</signal>
    <receiver>ZincView</receiver>
-   <slot>modelRead()</slot>
+   <slot>modelLoad()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>57</x>
@@ -870,7 +878,7 @@ QToolBox {
   </connection>
  </connections>
  <slots>
-  <slot>modelRead()</slot>
+  <slot>modelLoad()</slot>
   <slot>viewAll()</slot>
   <slot>viewAngleEntered()</slot>
   <slot>lookatPointEntered()</slot>

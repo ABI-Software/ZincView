@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'zincview.ui'
 #
-# Created: Thu May 14 13:33:10 2015
+# Created: Thu May 14 15:31:59 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -118,14 +118,14 @@ class Ui_ZincView(object):
         self.model_clear_button = QtGui.QPushButton(self.model)
         self.model_clear_button.setObjectName("model_clear_button")
         self.verticalLayout_4.addWidget(self.model_clear_button)
-        self.model_read_button = QtGui.QPushButton(self.model)
+        self.model_load_button = QtGui.QPushButton(self.model)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.model_read_button.sizePolicy().hasHeightForWidth())
-        self.model_read_button.setSizePolicy(sizePolicy)
-        self.model_read_button.setObjectName("model_read_button")
-        self.verticalLayout_4.addWidget(self.model_read_button)
+        sizePolicy.setHeightForWidth(self.model_load_button.sizePolicy().hasHeightForWidth())
+        self.model_load_button.setSizePolicy(sizePolicy)
+        self.model_load_button.setObjectName("model_load_button")
+        self.verticalLayout_4.addWidget(self.model_load_button)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_4.addItem(spacerItem)
         self.toolBox.addItem(self.model, "")
@@ -261,6 +261,7 @@ class Ui_ZincView(object):
         self.verticalLayout_5.addItem(spacerItem1)
         self.toolBox.addItem(self.view, "")
         self.rendering = QtGui.QWidget()
+        self.rendering.setGeometry(QtCore.QRect(0, 0, 228, 507))
         self.rendering.setObjectName("rendering")
         self.verticalLayout_7 = QtGui.QVBoxLayout(self.rendering)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
@@ -314,7 +315,7 @@ class Ui_ZincView(object):
         self.toolBox.setCurrentIndex(0)
         self.toolBox.layout().setSpacing(1)
         QtCore.QObject.connect(self.view_angle, QtCore.SIGNAL("editingFinished()"), ZincView.viewAngleEntered)
-        QtCore.QObject.connect(self.model_read_button, QtCore.SIGNAL("clicked()"), ZincView.modelRead)
+        QtCore.QObject.connect(self.model_load_button, QtCore.SIGNAL("clicked()"), ZincView.modelLoad)
         QtCore.QObject.connect(self.view_all_button, QtCore.SIGNAL("clicked()"), ZincView.viewAll)
         QtCore.QObject.connect(self.eye_point, QtCore.SIGNAL("editingFinished()"), ZincView.eyePointEntered)
         QtCore.QObject.connect(self.lookat_point, QtCore.SIGNAL("editingFinished()"), ZincView.lookatPointEntered)
@@ -337,7 +338,7 @@ class Ui_ZincView(object):
         ZincView.setWindowTitle(QtGui.QApplication.translate("ZincView", "ZincView", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidget.setWindowTitle(QtGui.QApplication.translate("ZincView", "ZincView Tools", None, QtGui.QApplication.UnicodeUTF8))
         self.model_clear_button.setText(QtGui.QApplication.translate("ZincView", "Clear model...", None, QtGui.QApplication.UnicodeUTF8))
-        self.model_read_button.setText(QtGui.QApplication.translate("ZincView", "Read model...", None, QtGui.QApplication.UnicodeUTF8))
+        self.model_load_button.setText(QtGui.QApplication.translate("ZincView", "Load model...", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.model), QtGui.QApplication.translate("ZincView", "Model", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.graphics), QtGui.QApplication.translate("ZincView", "Graphics", None, QtGui.QApplication.UnicodeUTF8))
         self.view_all_button.setText(QtGui.QApplication.translate("ZincView", "View All", None, QtGui.QApplication.UnicodeUTF8))

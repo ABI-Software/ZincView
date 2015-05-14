@@ -7,13 +7,13 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 
-import sys
 import math
+import os
+import sys
 from PySide import QtGui, QtCore
 from zincview_ui import Ui_ZincView
 from opencmiss.zinc.context import Context as ZincContext
 from opencmiss.zinc.status import OK as ZINC_OK
-#from opencmiss.zinc.element import Element
 from opencmiss.zinc.field import Field
 from opencmiss.zinc.sceneviewer import Sceneviewer, Sceneviewerevent
 
@@ -110,23 +110,26 @@ class ZincView(QtGui.QMainWindow):
         self.ui.scene_editor.setScene(scene)
         region.endHierarchicalChange()
  
-    def modelRead(self):
+    def modelLoad(self):
         '''
-        Read model file or script.
+        Read model file or run script to read or define model.
         '''
-        fileNameTuple = QtGui.QFileDialog.getOpenFileName(self, "Read ZincView Model", "", "Model Files (*.ex* *.fieldml);;ZincView scripts (*.zincview.py)");
+        fileNameTuple = QtGui.QFileDialog.getOpenFileName(self, "Load ZincView Model", "", "Model Files (*.ex* *.fieldml);;ZincView scripts (*.zincview.py)");
         fileName = fileNameTuple[0]
         fileFilter = fileNameTuple[1]
         if not fileName:
             return
         #print "reading file", fileName, ", filter", fileFilter
+        # set current directory to path from file, to support scripts and fieldml with external resources
+        path = os.path.dirname(fileName)
+        os.chdir(path)
         region = self._context.getDefaultRegion()
         if "scripts" in fileFilter:
             try:
                 f = open(fileName, 'r')
                 myfunctions = {}
                 exec f in myfunctions
-                success = myfunctions['readFile'](self._context.getDefaultRegion())
+                success = myfunctions['loadModel'](self._context.getDefaultRegion())
             except:
                 success = False
         else:
