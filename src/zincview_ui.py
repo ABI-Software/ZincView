@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'zincview.ui'
 #
-# Created: Thu May 14 22:15:56 2015
+# Created: Fri May 15 00:34:58 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -105,7 +105,7 @@ class Ui_ZincView(object):
         self.toolBox.setFrameShadow(QtGui.QFrame.Plain)
         self.toolBox.setObjectName("toolBox")
         self.model = QtGui.QWidget()
-        self.model.setGeometry(QtCore.QRect(0, 0, 228, 451))
+        self.model.setGeometry(QtCore.QRect(0, 0, 228, 425))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -130,7 +130,7 @@ class Ui_ZincView(object):
         self.verticalLayout_4.addItem(spacerItem)
         self.toolBox.addItem(self.model, "")
         self.graphics = QtGui.QWidget()
-        self.graphics.setGeometry(QtCore.QRect(0, 0, 228, 451))
+        self.graphics.setGeometry(QtCore.QRect(0, 0, 228, 425))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -151,7 +151,7 @@ class Ui_ZincView(object):
         self.verticalLayout_3.addWidget(self.scene_editor)
         self.toolBox.addItem(self.graphics, "")
         self.view = QtGui.QWidget()
-        self.view.setGeometry(QtCore.QRect(0, 0, 228, 451))
+        self.view.setGeometry(QtCore.QRect(0, 0, 207, 443))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -261,6 +261,7 @@ class Ui_ZincView(object):
         self.verticalLayout_5.addItem(spacerItem1)
         self.toolBox.addItem(self.view, "")
         self.time = QtGui.QWidget()
+        self.time.setGeometry(QtCore.QRect(0, 0, 228, 425))
         self.time.setObjectName("time")
         self.verticalLayout_8 = QtGui.QVBoxLayout(self.time)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
@@ -303,7 +304,7 @@ class Ui_ZincView(object):
         self.verticalLayout_8.addItem(spacerItem2)
         self.toolBox.addItem(self.time, "")
         self.rendering = QtGui.QWidget()
-        self.rendering.setGeometry(QtCore.QRect(0, 0, 228, 451))
+        self.rendering.setGeometry(QtCore.QRect(0, 0, 228, 425))
         self.rendering.setObjectName("rendering")
         self.verticalLayout_7 = QtGui.QVBoxLayout(self.rendering)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
@@ -342,6 +343,7 @@ class Ui_ZincView(object):
         self.verticalLayout_7.addItem(spacerItem3)
         self.toolBox.addItem(self.rendering, "")
         self.data_colouring = QtGui.QWidget()
+        self.data_colouring.setGeometry(QtCore.QRect(0, 0, 228, 425))
         self.data_colouring.setObjectName("data_colouring")
         self.verticalLayout_6 = QtGui.QVBoxLayout(self.data_colouring)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
@@ -373,6 +375,16 @@ class Ui_ZincView(object):
         spacerItem4 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_6.addItem(spacerItem4)
         self.toolBox.addItem(self.data_colouring, "")
+        self.output = QtGui.QWidget()
+        self.output.setObjectName("output")
+        self.verticalLayout_9 = QtGui.QVBoxLayout(self.output)
+        self.verticalLayout_9.setObjectName("verticalLayout_9")
+        self.save_image_button = QtGui.QPushButton(self.output)
+        self.save_image_button.setObjectName("save_image_button")
+        self.verticalLayout_9.addWidget(self.save_image_button)
+        spacerItem5 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_9.addItem(spacerItem5)
+        self.toolBox.addItem(self.output, "")
         self.verticalLayout_2.addWidget(self.toolBox)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
         self.verticalLayout.addWidget(self.scrollArea)
@@ -415,6 +427,7 @@ class Ui_ZincView(object):
         QtCore.QObject.connect(self.time_maximum_lineedit, QtCore.SIGNAL("editingFinished()"), ZincView.timeMaximumEntered)
         QtCore.QObject.connect(self.time_text_lineedit, QtCore.SIGNAL("editingFinished()"), ZincView.timeTextEntered)
         QtCore.QObject.connect(self.time_slider, QtCore.SIGNAL("valueChanged(int)"), ZincView.timeSliderChanged)
+        QtCore.QObject.connect(self.save_image_button, QtCore.SIGNAL("clicked()"), ZincView.saveImageClicked)
         QtCore.QMetaObject.connectSlotsByName(ZincView)
 
     def retranslateUi(self, ZincView):
@@ -451,6 +464,8 @@ class Ui_ZincView(object):
         self.spectrum_maximum_label.setText(QtGui.QApplication.translate("ZincView", "Maximum:", None, QtGui.QApplication.UnicodeUTF8))
         self.spectrum_add_colour_bar_button.setText(QtGui.QApplication.translate("ZincView", "Add colour bar", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.data_colouring), QtGui.QApplication.translate("ZincView", "Data Colouring", None, QtGui.QApplication.UnicodeUTF8))
+        self.save_image_button.setText(QtGui.QApplication.translate("ZincView", "Save image...", None, QtGui.QApplication.UnicodeUTF8))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.output), QtGui.QApplication.translate("ZincView", "Output", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen.setText(QtGui.QApplication.translate("ZincView", "Open", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("ZincView", "Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionView_All.setText(QtGui.QApplication.translate("ZincView", "View All", None, QtGui.QApplication.UnicodeUTF8))

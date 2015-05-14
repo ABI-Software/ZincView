@@ -173,7 +173,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>451</height>
+              <height>425</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -230,7 +230,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>451</height>
+              <height>425</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -266,8 +266,8 @@ QToolBox {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>228</width>
-              <height>451</height>
+              <width>207</width>
+              <height>443</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -468,6 +468,14 @@ QToolBox {
             </layout>
            </widget>
            <widget class="QWidget" name="time">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>228</width>
+              <height>425</height>
+             </rect>
+            </property>
             <attribute name="label">
              <string>Time</string>
             </attribute>
@@ -558,7 +566,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>451</height>
+              <height>425</height>
              </rect>
             </property>
             <attribute name="label">
@@ -633,6 +641,14 @@ QToolBox {
             </layout>
            </widget>
            <widget class="QWidget" name="data_colouring">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>228</width>
+              <height>425</height>
+             </rect>
+            </property>
             <attribute name="label">
              <string>Data Colouring</string>
             </attribute>
@@ -685,6 +701,33 @@ QToolBox {
              </item>
              <item>
               <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="output">
+            <attribute name="label">
+             <string>Output</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QPushButton" name="save_image_button">
+               <property name="text">
+                <string>Save image...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_6">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -1171,6 +1214,22 @@ QToolBox {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>save_image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>saveImageClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>modelLoad()</slot>
@@ -1201,5 +1260,6 @@ QToolBox {
   <slot>timeMaximumEntered()</slot>
   <slot>timeTextEntered()</slot>
   <slot>timeSliderChanged(int)</slot>
+  <slot>saveImageClicked()</slot>
  </slots>
 </ui>

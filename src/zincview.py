@@ -55,6 +55,7 @@ class ZincView(QtGui.QMainWindow):
         self._sceneviewernotifier.setCallback(self._sceneviewerChange)
         self._maximumClippingDistance = sceneviewer.getFarClippingPlane()
         self.allSettingsUpdate()
+        self.ui.save_image_button.setEnabled(False)
 
     def _sceneviewerChange(self, event):
         '''
@@ -799,6 +800,13 @@ class ZincView(QtGui.QMainWindow):
             time = minimum
         timekeeper.setTime(time)
         self.timeTextDisplay()
+
+    def saveImageClicked(self):
+        '''
+        Save the view in the window to an image file.
+        '''
+        # Not implemented
+        pass
 
 # main start
 def main(argv):
