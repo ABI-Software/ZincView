@@ -1,6 +1,8 @@
 """
 Example ZincView model loading script.
 
+Must implement loadModel() function which must return True on success.
+
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -25,7 +27,7 @@ def getDefaultCoordinateField(fieldmodule):
         field = fielditer.next()
     return None
 
-def readFile(region):
+def loadModel(region):
     '''
     This function must be implemented and return True on success to be
     a valid ZincView script
@@ -43,9 +45,10 @@ def readFile(region):
     bob = fieldmodule.createFieldStringConstant("bob")
     bob.setName("bob")
     bob.setManaged(True)
-    coordinates_lambda = fieldmodule.createFieldComponent(coordinates, 1)
-    coordinates_lambda.setName("coordinates.lambda")
-    coordinates_lambda.setManaged(True)
+    for i in range(1, coordinates.getNumberOfComponents() + 1):
+        component = fieldmodule.createFieldComponent(coordinates, i)
+        component.setName(coordinates.getComponentName(i))
+        component.setManaged(True)
     rc_coordinates = fieldmodule.createFieldCoordinateTransformation(coordinates)
     rc_coordinates.setCoordinateSystemType(Field.COORDINATE_SYSTEM_TYPE_RECTANGULAR_CARTESIAN)
     direction = fieldmodule.createFieldConstant([0.8, 0.4, 0.1])
