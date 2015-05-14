@@ -13,6 +13,7 @@ import sys
 from PySide import QtGui, QtCore
 from zincview_ui import Ui_ZincView
 from opencmiss.zinc.context import Context as ZincContext
+from opencmiss.zinc.scenecoordinatesystem import *
 from opencmiss.zinc.status import OK as ZINC_OK
 from opencmiss.zinc.field import Field
 from opencmiss.zinc.sceneviewer import Sceneviewer, Sceneviewerevent
@@ -42,10 +43,6 @@ class ZincView(QtGui.QMainWindow):
         self.ui.sceneviewerwidget.graphicsInitialized.connect(self._graphicsInitialized)
         self.setWindowIcon(QtGui.QIcon(":/cmiss_icon.ico"))
         self._maximumClippingDistance = 1
-        # show values on
-        self.tessellationMinimumDivisionsDisplay()
-        self.tessellationRefinementFactorsDisplay()
-        self.tessellationCircleDivisionsDisplay()
 
     def _graphicsInitialized(self):
         '''
@@ -53,12 +50,18 @@ class ZincView(QtGui.QMainWindow):
         Set up additional sceneviewer notifiers for updating widgets
         '''
         sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
+        self.ui.sceneviewerwidget.setSelectModeAll()
         self._sceneviewernotifier = sceneviewer.createSceneviewernotifier()
         self._sceneviewernotifier.setCallback(self._sceneviewerChange)
         self._maximumClippingDistance = sceneviewer.getFarClippingPlane()
+        # show initial values on widgets
         self.viewSettingsUpdate()
         self.backgroundColourDisplay()
-        self.ui.sceneviewerwidget.setSelectModeAll()
+        self.tessellationMinimumDivisionsDisplay()
+        self.tessellationRefinementFactorsDisplay()
+        self.tessellationCircleDivisionsDisplay()
+        self.spectrumMinimumDisplay()
+        self.spectrumMaximumDisplay()
 
     def _sceneviewerChange(self, event):
         '''
@@ -230,14 +233,13 @@ class ZincView(QtGui.QMainWindow):
         '''
         Set scene viewer diagonal view angle from value in the view angle widget
         '''
-        viewAngleText = self.ui.view_angle.text()
         try:
-            viewAngleRadians = float(viewAngleText)*math.pi/180.0
+            viewAngleRadians = float(self.ui.view_angle.text())*math.pi/180.0
             if ZINC_OK != self.ui.sceneviewerwidget.getSceneviewer().setViewAngle(viewAngleRadians):
-                raise;
+                raise
         except:
-            print "Invalid view angle ", viewAngleText
-            self.viewAngleDisplay()
+            print "Invalid view angle"
+        self.viewAngleDisplay()
 
     def setLookatParametersNonSkew(self):
         '''
@@ -527,6 +529,108 @@ class ZincView(QtGui.QMainWindow):
         '''
         sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
         sceneviewer.setPerturbLinesFlag(state)
+
+    def spectrumAutorangeClicked(self):
+        '''
+        Set spectrum min/max to fit range of visible data in scene graphics.
+        '''
+        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
+        scene = sceneviewer.getScene()
+        filter = sceneviewer.getScenefilter()
+        spectrummodule = scene.getSpectrummodule()
+        spectrum = spectrummodule.getDefaultSpectrum()
+        result, minimum, maximum = scene.getSpectrumDataRange(filter, spectrum, 1)
+        if result == ZINC_OK:
+            spectrummodule.beginChange()
+            spectrumcomponent = spectrum.getFirstSpectrumcomponent()
+            spectrumcomponent.setRangeMinimum(minimum)
+            spectrumcomponent.setRangeMaximum(maximum)
+            spectrummodule.endChange()
+            self.spectrumMinimumDisplay()
+            self.spectrumMaximumDisplay()
+
+    def spectrumMinimumDisplay(self):
+        '''
+        Display the current default spectrum minimum
+        '''
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        spectrummodule = scene.getSpectrummodule()
+        spectrum = spectrummodule.getDefaultSpectrum()
+        spectrumcomponent = spectrum.getFirstSpectrumcomponent()
+        minimum = spectrumcomponent.getRangeMinimum()
+        self._displayReal(self.ui.spectrum_minimum_lineedit, minimum)
+
+    def spectrumMinimumEntered(self):
+        '''
+        Set default spectrum minimum from value in the widget
+        '''
+        try:
+            minimum = float(self.ui.spectrum_minimum_lineedit.text())
+            scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+            spectrummodule = scene.getSpectrummodule()
+            spectrum = spectrummodule.getDefaultSpectrum()
+            spectrumcomponent = spectrum.getFirstSpectrumcomponent()
+            if ZINC_OK != spectrumcomponent.setRangeMinimum(minimum):
+                raise
+        except:
+            print "Invalid spectrum minimum"
+        self.spectrumMinimumDisplay()
+
+    def spectrumMaximumDisplay(self):
+        '''
+        Display the current default spectrum maximum
+        '''
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        spectrummodule = scene.getSpectrummodule()
+        spectrum = spectrummodule.getDefaultSpectrum()
+        spectrumcomponent = spectrum.getFirstSpectrumcomponent()
+        maximum = spectrumcomponent.getRangeMaximum()
+        self._displayReal(self.ui.spectrum_maximum_lineedit, maximum)
+
+    def spectrumMaximumEntered(self):
+        '''
+        Set default spectrum maximum from value in the widget
+        '''
+        try:
+            maximum = float(self.ui.spectrum_maximum_lineedit.text())
+            scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+            spectrummodule = scene.getSpectrummodule()
+            spectrum = spectrummodule.getDefaultSpectrum()
+            spectrumcomponent = spectrum.getFirstSpectrumcomponent()
+            if ZINC_OK != spectrumcomponent.setRangeMaximum(maximum):
+                raise
+        except:
+            print "Invalid spectrum maximum"
+        self.spectrumMaximumDisplay()
+
+    def spectrumAddColourBarClicked(self):
+        '''
+        Add an overlay graphics showing the default spectrum colour bar.
+        '''
+        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
+        scene = sceneviewer.getScene()
+        scene.beginChange()
+        spectrummodule = scene.getSpectrummodule()
+        spectrum = spectrummodule.getDefaultSpectrum()
+        glyphmodule = scene.getGlyphmodule()
+        glyphmodule.beginChange()
+        colourbar = glyphmodule.findGlyphByName("colourbar")
+        if not colourbar.isValid():
+            colourbar = glyphmodule.createGlyphColourBar(spectrum)
+            colourbar.setName("colourbar")
+        glyphmodule.endChange()
+        graphics = scene.findGraphicsByName("colourbar")
+        if graphics.isValid():
+            scene.removeGraphics(graphics)
+        graphics = scene.createGraphicsPoints()
+        graphics.setName("colourbar")
+        graphics.setScenecoordinatesystem(SCENECOORDINATESYSTEM_NORMALISED_WINDOW_FIT_LEFT)
+        pointattributes = graphics.getGraphicspointattributes()
+        pointattributes.setGlyph(colourbar)
+        pointattributes.setBaseSize([1.0,1.0,1.0])
+        pointattributes.setGlyphOffset([-0.9,0.0,0.0])
+        scene.endChange()
+        self.ui.scene_editor.setScene(scene)
 
 # main start
 def main(argv):

@@ -173,7 +173,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>507</height>
+              <height>482</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -230,7 +230,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>507</height>
+              <height>482</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -267,7 +267,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>507</height>
+              <height>482</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -473,7 +473,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>507</height>
+              <height>482</height>
              </rect>
             </property>
             <attribute name="label">
@@ -534,6 +534,72 @@ QToolBox {
              </item>
              <item>
               <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="data_colouring">
+            <attribute name="label">
+             <string>Data Colouring</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QPushButton" name="spectrum_autorange_button">
+               <property name="text">
+                <string>Autorange spectrum</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="frame">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QFormLayout" name="formLayout_3">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="spectrum_minimum_label">
+                  <property name="text">
+                   <string>Minimum:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="spectrum_minimum_lineedit"/>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="spectrum_maximum_lineedit"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="spectrum_maximum_label">
+                  <property name="text">
+                   <string>Maximum:</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="spectrum_add_colour_bar_button">
+               <property name="text">
+                <string>Add colour bar</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_4">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -876,6 +942,70 @@ QToolBox {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>spectrum_autorange_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumAutorangeClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spectrum_minimum_lineedit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumMinimumEntered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spectrum_maximum_lineedit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumMaximumEntered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>256</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spectrum_add_colour_bar_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>spectrumAddColourBarClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>410</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>modelLoad()</slot>
@@ -897,5 +1027,9 @@ QToolBox {
   <slot>tessellationCircleDivisionsDisplay()</slot>
   <slot>perturbLinesStateChanged(bool)</slot>
   <slot>modelClear()</slot>
+  <slot>spectrumAutorangeClicked()</slot>
+  <slot>spectrumMinimumEntered()</slot>
+  <slot>spectrumMaximumEntered()</slot>
+  <slot>spectrumAddColourBarClicked()</slot>
  </slots>
 </ui>
