@@ -54,14 +54,7 @@ class ZincView(QtGui.QMainWindow):
         self._sceneviewernotifier = sceneviewer.createSceneviewernotifier()
         self._sceneviewernotifier.setCallback(self._sceneviewerChange)
         self._maximumClippingDistance = sceneviewer.getFarClippingPlane()
-        # show initial values on widgets
-        self.viewSettingsUpdate()
-        self.backgroundColourDisplay()
-        self.tessellationMinimumDivisionsDisplay()
-        self.tessellationRefinementFactorsDisplay()
-        self.tessellationCircleDivisionsDisplay()
-        self.spectrumMinimumDisplay()
-        self.spectrumMaximumDisplay()
+        self.allSettingsUpdate()
 
     def _sceneviewerChange(self, event):
         '''
@@ -112,12 +105,13 @@ class ZincView(QtGui.QMainWindow):
         scene.removeAllGraphics()
         self.ui.scene_editor.setScene(scene)
         region.endHierarchicalChange()
- 
+        self.allSettingsUpdate()
+
     def modelLoad(self):
         '''
         Read model file or run script to read or define model.
         '''
-        fileNameTuple = QtGui.QFileDialog.getOpenFileName(self, "Load ZincView Model", "", "Model Files (*.ex* *.fieldml);;ZincView scripts (*.zincview.py)");
+        fileNameTuple = QtGui.QFileDialog.getOpenFileName(self, "Load ZincView Model", "", "ZincView scripts (*.zincview.py);;Model Files (*.ex* *.fieldml)");
         fileName = fileNameTuple[0]
         fileFilter = fileNameTuple[1]
         if not fileName:
@@ -146,9 +140,10 @@ class ZincView(QtGui.QMainWindow):
             msgBox.setDefaultButton(QtGui.QMessageBox.Cancel)
             result = msgBox.exec_()
             return
-        self.viewAll()
         scene = region.getScene()
         self.ui.scene_editor.setScene(scene)
+        self.allSettingsUpdate()
+        self.viewAll()
  
     def _displayReal(self, widget, value):
         '''
@@ -190,6 +185,22 @@ class ZincView(QtGui.QMainWindow):
         if len(values) < 1:
             raise
         return values
+
+    def allSettingsUpdate(self):
+        '''
+        Show initial values on widgets
+        '''
+        self.viewSettingsUpdate()
+        self.backgroundColourDisplay()
+        self.tessellationMinimumDivisionsDisplay()
+        self.tessellationRefinementFactorsDisplay()
+        self.tessellationCircleDivisionsDisplay()
+        self.spectrumMinimumDisplay()
+        self.spectrumMaximumDisplay()
+        self.timeMinimumDisplay()
+        self.timeMaximumDisplay()
+        self.timeTextDisplay()
+        self.timeSliderDisplay()
 
     def viewAll(self):
         '''
@@ -540,7 +551,7 @@ class ZincView(QtGui.QMainWindow):
         spectrummodule = scene.getSpectrummodule()
         spectrum = spectrummodule.getDefaultSpectrum()
         result, minimum, maximum = scene.getSpectrumDataRange(filter, spectrum, 1)
-        if result == ZINC_OK:
+        if result >= 1: # result is number of components with range, can exceed 1
             spectrummodule.beginChange()
             spectrumcomponent = spectrum.getFirstSpectrumcomponent()
             spectrumcomponent.setRangeMinimum(minimum)
@@ -631,6 +642,163 @@ class ZincView(QtGui.QMainWindow):
         pointattributes.setGlyphOffset([-0.9,0.0,0.0])
         scene.endChange()
         self.ui.scene_editor.setScene(scene)
+
+    def timeAutorangeClicked(self):
+        '''
+        Set time min/max to time range of finite element field parameters.
+        '''
+        region = self._context.getDefaultRegion()
+        # it's not easy to get the range of time; assume all nodes have same
+        # time range, and use timesequence from first node field with one
+        # One problem is that often the last time represents the start of an
+        # increment, so the new range should be higher, which matters if animating
+        fieldmodule = region.getFieldmodule()
+        nodeset = fieldmodule.findNodesetByFieldDomainType(Field.DOMAIN_TYPE_NODES)
+        nodeiter = nodeset.createNodeiterator()
+        node = nodeiter.next()
+        minimum = 0.0
+        maximum = 0.0
+        if node.isValid:
+            fielditer = fieldmodule.createFielditerator()
+            field = fielditer.next()
+            while field.isValid():
+                feField = field.castFiniteElement()
+                if feField.isValid():
+                    nodetemplate = nodeset.createNodetemplate()
+                    nodetemplate.defineFieldFromNode(feField, node)
+                    timesequence = nodetemplate.getTimesequence(feField)
+                    if timesequence.isValid():
+                        count = timesequence.getNumberOfTimes()
+                        if count > 0:
+                            minimum = timesequence.getTime(1)
+                            maximum = timesequence.getTime(count)
+                            break
+                field = fielditer.next()
+        scene = region.getScene()
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        timekeeper.setMinimumTime(minimum)
+        timekeeper.setMaximumTime(maximum)
+        self.timeMinimumDisplay()
+        self.timeMaximumDisplay()
+        currentTime = timekeeper.getTime()
+        if currentTime < minimum:
+            timekeeper.setTime(minimum)
+        elif currentTime > maximum:
+            timekeeper.setTime(maximum)
+        self.timeTextDisplay()
+        self.timeSliderDisplay()
+
+    def timeMinimumDisplay(self):
+        '''
+        Display the current default timekeeper minimum time
+        '''
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        minimum = timekeeper.getMinimumTime()
+        self._displayReal(self.ui.time_minimum_lineedit, minimum)
+
+    def timeMinimumEntered(self):
+        '''
+        Set default timekeeper minimum time from value in the widget
+        '''
+        try:
+            minimum = float(self.ui.time_minimum_lineedit.text())
+            scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+            timekeepermodule = scene.getTimekeepermodule()
+            timekeeper = timekeepermodule.getDefaultTimekeeper()
+            if ZINC_OK != timekeeper.setMinimumTime(minimum):
+                raise
+        except:
+            print "Invalid minimum time"
+        self.timeMinimumDisplay()
+
+    def timeMaximumDisplay(self):
+        '''
+        Display the current default timekeeper maximum time
+        '''
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        maximum = timekeeper.getMaximumTime()
+        self._displayReal(self.ui.time_maximum_lineedit, maximum)
+
+    def timeMaximumEntered(self):
+        '''
+        Set default timekeeper maximum time from value in the widget
+        '''
+        try:
+            maximum = float(self.ui.time_maximum_lineedit.text())
+            scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+            timekeepermodule = scene.getTimekeepermodule()
+            timekeeper = timekeepermodule.getDefaultTimekeeper()
+            if ZINC_OK != timekeeper.setMaximumTime(maximum):
+                raise
+        except:
+            print "Invalid maximum time"
+        self.timeMaximumDisplay()
+
+    def timeTextDisplay(self):
+        '''
+        Display the default timekeeper current time
+        '''
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        time = timekeeper.getTime()
+        self._displayReal(self.ui.time_text_lineedit, time)
+
+    def timeTextEntered(self):
+        '''
+        Set default timekeeper current time from value in the widget
+        '''
+        try:
+            time = float(self.ui.time_text_lineedit.text())
+            scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+            timekeepermodule = scene.getTimekeepermodule()
+            timekeeper = timekeepermodule.getDefaultTimekeeper()
+            if ZINC_OK != timekeeper.setTime(time):
+                raise
+            self.timeSliderDisplay()
+        except:
+            print "Invalid current time"
+        self.timeTextDisplay()
+
+    def timeSliderDisplay(self):
+        '''
+        Display the default timekeeper current time on the time slider
+        '''
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        minimum = timekeeper.getMinimumTime()
+        maximum = timekeeper.getMaximumTime()
+        time = timekeeper.getTime()
+        # don't want signal for my change
+        self.ui.time_slider.blockSignals(True)
+        if maximum != minimum:
+            value = int(time*(10000.999/(maximum - minimum)))
+        else:
+            value = 0
+        self.ui.time_slider.setValue(value)
+        self.ui.time_slider.blockSignals(False)
+
+    def timeSliderChanged(self, value):
+        '''
+        Set near clipping plane distance from slider
+        '''
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        minimum = timekeeper.getMinimumTime()
+        maximum = timekeeper.getMaximumTime()
+        if maximum != minimum:
+            time = float(value)*((maximum - minimum)/10000.0)
+        else:
+            time = minimum
+        timekeeper.setTime(time)
+        self.timeTextDisplay()
 
 # main start
 def main(argv):
