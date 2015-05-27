@@ -125,7 +125,7 @@ QToolBox {
           <x>0</x>
           <y>0</y>
           <width>228</width>
-          <height>607</height>
+          <height>608</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -162,7 +162,7 @@ QToolBox {
             <enum>QFrame::Plain</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>6</number>
            </property>
            <property name="tabSpacing">
             <number>2</number>
@@ -173,7 +173,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>425</height>
+              <height>419</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -230,7 +230,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>425</height>
+              <height>419</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -266,8 +266,8 @@ QToolBox {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>207</width>
-              <height>443</height>
+              <width>212</width>
+              <height>449</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -473,7 +473,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>425</height>
+              <height>419</height>
              </rect>
             </property>
             <attribute name="label">
@@ -566,7 +566,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>425</height>
+              <height>419</height>
              </rect>
             </property>
             <attribute name="label">
@@ -646,7 +646,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>425</height>
+              <height>419</height>
              </rect>
             </property>
             <attribute name="label">
@@ -715,6 +715,14 @@ QToolBox {
             </layout>
            </widget>
            <widget class="QWidget" name="output">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>228</width>
+              <height>419</height>
+             </rect>
+            </property>
             <attribute name="label">
              <string>Output</string>
             </attribute>
@@ -723,6 +731,13 @@ QToolBox {
               <widget class="QPushButton" name="save_image_button">
                <property name="text">
                 <string>Save image...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="save_webgl_button">
+               <property name="text">
+                <string>Save WebGL...</string>
                </property>
               </widget>
              </item>
@@ -1230,6 +1245,22 @@ QToolBox {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>save_webgl_button</sender>
+   <signal>clicked()</signal>
+   <receiver>ZincView</receiver>
+   <slot>saveWebGLClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>270</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>modelLoad()</slot>
@@ -1261,5 +1292,6 @@ QToolBox {
   <slot>timeTextEntered()</slot>
   <slot>timeSliderChanged(int)</slot>
   <slot>saveImageClicked()</slot>
+  <slot>saveWebGLClicked()</slot>
  </slots>
 </ui>
