@@ -810,14 +810,24 @@ class ZincView(QtGui.QMainWindow):
         pass
     
     def exportSceneViewersettings(self, outputPrefix, numberOfResources):
+    	scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        si = scene.createStreaminformationScene()
+        si.setIOFormat(si.IO_FORMAT_THREEJS)
+        si.setIODataType(si.IO_FORMAT_THREEJS)
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        minimum = timekeeper.getMinimumTime()
+        maximum = timekeeper.getMaximumTime()
+        time_enabled = 0
+        if (maximum - minimum) > 0.001:
+        	time_enabled = 1
         sv = self.ui.sceneviewerwidget.getSceneviewer()
         sv.viewAll()
         nearPlane = sv.getNearClippingPlane()
         farPlane = sv.getFarClippingPlane()
         result, eyePos, lookat, upVector = sv.getLookatParameters()
-        obj = { "nearPlane": nearPlane, "farPlane": farPlane, "eyePosition": eyePos, "targetPosition": lookat, "upVector": upVector, "numberOfResources": numberOfResources}
+        obj = { "nearPlane": nearPlane, "farPlane": farPlane, "eyePosition": eyePos, "targetPosition": lookat, "upVector": upVector, "numberOfResources": numberOfResources, "timeEnabled" : time_enabled}
         outputName = outputPrefix + "_view.json"
-        print outputName
         export_f = open(outputName, "wb+")
         export_f.write(str(json.dumps(obj)))
         export_f.close()
@@ -827,9 +837,14 @@ class ZincView(QtGui.QMainWindow):
         si = scene.createStreaminformationScene()
         si.setIOFormat(si.IO_FORMAT_THREEJS)
         si.setIODataType(si.IO_FORMAT_THREEJS)
-        si.setInitialTime(0.0)
-        si.setFinishTime(1.0)
-        si.setNumberOfTimeSteps(51)
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        minimum = timekeeper.getMinimumTime()
+        maximum = timekeeper.getMaximumTime()
+        if (maximum - minimum) > 0.0:
+   	    	si.setInitialTime(minimum)
+   	    	si.setFinishTime(maximum)
+   	    	si.setNumberOfTimeSteps(51)
         number = si.getNumberOfResourcesRequired()
         i = 0
         srs =  []
