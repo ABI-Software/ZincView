@@ -382,6 +382,9 @@ class Ui_ZincView(object):
         self.save_image_button = QtGui.QPushButton(self.output)
         self.save_image_button.setObjectName("save_image_button")
         self.verticalLayout_9.addWidget(self.save_image_button)
+        self.save_webgl_button = QtGui.QPushButton(self.output)
+        self.save_webgl_button.setObjectName("save_webgl_button")
+        self.verticalLayout_9.addWidget(self.save_webgl_button)
         spacerItem5 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_9.addItem(spacerItem5)
         self.toolBox.addItem(self.output, "")
@@ -428,6 +431,7 @@ class Ui_ZincView(object):
         QtCore.QObject.connect(self.time_text_lineedit, QtCore.SIGNAL("editingFinished()"), ZincView.timeTextEntered)
         QtCore.QObject.connect(self.time_slider, QtCore.SIGNAL("valueChanged(int)"), ZincView.timeSliderChanged)
         QtCore.QObject.connect(self.save_image_button, QtCore.SIGNAL("clicked()"), ZincView.saveImageClicked)
+        QtCore.QObject.connect(self.save_webgl_button, QtCore.SIGNAL("clicked()"), ZincView.saveWebGLClicked)
         QtCore.QMetaObject.connectSlotsByName(ZincView)
 
     def retranslateUi(self, ZincView):
@@ -465,6 +469,7 @@ class Ui_ZincView(object):
         self.spectrum_add_colour_bar_button.setText(QtGui.QApplication.translate("ZincView", "Add colour bar", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.data_colouring), QtGui.QApplication.translate("ZincView", "Data Colouring", None, QtGui.QApplication.UnicodeUTF8))
         self.save_image_button.setText(QtGui.QApplication.translate("ZincView", "Save image...", None, QtGui.QApplication.UnicodeUTF8))
+        self.save_webgl_button.setText(QtGui.QApplication.translate("ZincView", "Save WebGL...", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.output), QtGui.QApplication.translate("ZincView", "Output", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen.setText(QtGui.QApplication.translate("ZincView", "Open", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("ZincView", "Quit", None, QtGui.QApplication.UnicodeUTF8))
