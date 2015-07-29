@@ -10,6 +10,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import math
 import os
 import sys
+import json
 from PySide import QtGui, QtCore
 from zincview_ui import Ui_ZincView
 from opencmiss.zinc.context import Context as ZincContext
@@ -823,6 +824,67 @@ class ZincView(QtGui.QMainWindow):
         '''
         # Not implemented
         pass
+    
+    def exportSceneViewersettings(self, outputPrefix, numberOfResources):
+    	scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        si = scene.createStreaminformationScene()
+        si.setIOFormat(si.IO_FORMAT_THREEJS)
+        si.setIODataType(si.IO_FORMAT_THREEJS)
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        minimum = timekeeper.getMinimumTime()
+        maximum = timekeeper.getMaximumTime()
+        time_enabled = 0
+        if (maximum - minimum) > 0.001:
+        	time_enabled = 1
+        sv = self.ui.sceneviewerwidget.getSceneviewer()
+        sv.viewAll()
+        nearPlane = sv.getNearClippingPlane()
+        farPlane = sv.getFarClippingPlane()
+        result, eyePos, lookat, upVector = sv.getLookatParameters()
+        obj = { "nearPlane": nearPlane, "farPlane": farPlane, "eyePosition": eyePos, "targetPosition": lookat, "upVector": upVector, "numberOfResources": numberOfResources, "timeEnabled" : time_enabled}
+        outputName = outputPrefix + "_view.json"
+        export_f = open(outputName, "wb+")
+        export_f.write(str(json.dumps(obj)))
+        export_f.close()
+    
+    def exportScene(self, outputPrefix):
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        si = scene.createStreaminformationScene()
+        si.setIOFormat(si.IO_FORMAT_THREEJS)
+        si.setIODataType(si.IO_FORMAT_THREEJS)
+        timekeepermodule = scene.getTimekeepermodule()
+        timekeeper = timekeepermodule.getDefaultTimekeeper()
+        minimum = timekeeper.getMinimumTime()
+        maximum = timekeeper.getMaximumTime()
+        if (maximum - minimum) > 0.0:
+   	    	si.setInitialTime(minimum)
+   	    	si.setFinishTime(maximum)
+   	    	si.setNumberOfTimeSteps(51)
+        number = si.getNumberOfResourcesRequired()
+        i = 0
+        srs =  []
+        while i < number:
+            outputName = outputPrefix + "_" + str(i + 1) + ".json"
+            srs.append(si.createStreamresourceFile(outputName))
+            i = i + 1
+        scene.exportScene(si)
+        return number
+        
+    def saveWebGLClicked(self):
+        '''
+        Save the view in the window to WebGL content.
+        '''
+        fileNameTuple = QtGui.QFileDialog.getSaveFileName(self, "Specify prefix", "");
+        fileName = fileNameTuple[0]
+        if not fileName:
+            return
+        #print "reading file", fileName, ", filter", fileFilter
+        # set current directory to path from file, to support scripts and fieldml with external resources
+        # Not implemented
+        numberOfResources = self.exportScene(str(fileName))
+        self.exportSceneViewersettings(str(fileName), numberOfResources)
+
 
 # main start
 def main(argv):
