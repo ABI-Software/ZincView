@@ -151,6 +151,7 @@ class ZincView(QtGui.QMainWindow):
         if result == QtGui.QMessageBox.Cancel:
             return
         self._rootRegion = self._context.createRegion()
+        self.ui.region_chooser.setRootRegion(self._rootRegion)
         scene = self._rootRegion.getScene()
         self.ui.scene_editor.setScene(scene)
         self.ui.sceneviewerwidget.getSceneviewer().setScene(scene)
@@ -191,6 +192,7 @@ class ZincView(QtGui.QMainWindow):
         scene = self._rootRegion.getScene()
         # ensure scene editor graphics list is redisplayed, and widgets are updated
         self.ui.scene_editor.setScene(scene)
+        self.ui.region_chooser.setRootRegion(self._rootRegion)
         self.allSettingsUpdate()
         self.viewAll()
  
@@ -250,6 +252,10 @@ class ZincView(QtGui.QMainWindow):
         self.timeMaximumDisplay()
         self.timeTextDisplay()
         self.timeSliderDisplay()
+
+    def regionChanged(self, int):
+        region = self.ui.region_chooser.getRegion()
+        self.ui.scene_editor.setScene(region.getScene())
 
     def viewAll(self):
         '''

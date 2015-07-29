@@ -125,7 +125,7 @@ QToolBox {
           <x>0</x>
           <y>0</y>
           <width>228</width>
-          <height>608</height>
+          <height>607</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -162,7 +162,7 @@ QToolBox {
             <enum>QFrame::Plain</enum>
            </property>
            <property name="currentIndex">
-            <number>6</number>
+            <number>0</number>
            </property>
            <property name="tabSpacing">
             <number>2</number>
@@ -173,7 +173,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>419</height>
+              <height>425</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -230,7 +230,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>419</height>
+              <height>425</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -250,6 +250,31 @@ QToolBox {
               <number>3</number>
              </property>
              <item>
+              <widget class="QWidget" name="widget" native="true">
+               <layout class="QFormLayout" name="formLayout_5">
+                <property name="horizontalSpacing">
+                 <number>3</number>
+                </property>
+                <property name="verticalSpacing">
+                 <number>3</number>
+                </property>
+                <property name="margin">
+                 <number>3</number>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="region_label">
+                  <property name="text">
+                   <string>Region:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="RegionChooserWidget" name="region_chooser"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <widget class="SceneEditorWidget" name="scene_editor" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -266,8 +291,8 @@ QToolBox {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>212</width>
-              <height>449</height>
+              <width>207</width>
+              <height>443</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -473,7 +498,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>419</height>
+              <height>425</height>
              </rect>
             </property>
             <attribute name="label">
@@ -566,7 +591,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>419</height>
+              <height>425</height>
              </rect>
             </property>
             <attribute name="label">
@@ -646,7 +671,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>419</height>
+              <height>425</height>
              </rect>
             </property>
             <attribute name="label">
@@ -720,7 +745,7 @@ QToolBox {
               <x>0</x>
               <y>0</y>
               <width>228</width>
-              <height>419</height>
+              <height>425</height>
              </rect>
             </property>
             <attribute name="label">
@@ -793,6 +818,11 @@ QToolBox {
    <extends>QWidget</extends>
    <header>opencmiss/zincwidgets/sceneeditorwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RegionChooserWidget</class>
+   <extends>QComboBox</extends>
+   <header>regionchooserwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -1261,6 +1291,22 @@ QToolBox {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>region_chooser</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>ZincView</receiver>
+   <slot>regionChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>95</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>modelLoad()</slot>
@@ -1293,5 +1339,6 @@ QToolBox {
   <slot>timeSliderChanged(int)</slot>
   <slot>saveImageClicked()</slot>
   <slot>saveWebGLClicked()</slot>
+  <slot>regionChanged(int)</slot>
  </slots>
 </ui>
