@@ -115,7 +115,7 @@ def loadModel(region):
         spectrumComponent1.setColourMappingType(Spectrumcomponent.COLOUR_MAPPING_TYPE_RED)
         spectrumComponent1.setRangeMinimum(-1.0)
         spectrumComponent1.setRangeMaximum(0.0)
-        spectrumComponent1.setExtendBelow(True)
+        spectrumComponent1.setExtendAbove(False)
         spectrumComponent1.setColourMinimum(1.0)
         spectrumComponent1.setColourMaximum(1.0)
         # blue when positive
@@ -123,7 +123,7 @@ def loadModel(region):
         spectrumComponent2.setColourMappingType(Spectrumcomponent.COLOUR_MAPPING_TYPE_BLUE)
         spectrumComponent2.setRangeMinimum(0.0)
         spectrumComponent2.setRangeMaximum(1.0)
-        spectrumComponent2.setExtendAbove(True)
+        spectrumComponent2.setExtendBelow(False)
         spectrumComponent2.setColourMinimum(1.0)
         spectrumComponent2.setColourMaximum(1.0)
         # this adds some green to the blue above so not too dark
@@ -131,7 +131,7 @@ def loadModel(region):
         spectrumComponent3.setColourMappingType(Spectrumcomponent.COLOUR_MAPPING_TYPE_GREEN)
         spectrumComponent3.setRangeMinimum(0.0)
         spectrumComponent3.setRangeMaximum(1.0)
-        spectrumComponent3.setExtendAbove(True)
+        spectrumComponent3.setExtendBelow(False)
         spectrumComponent3.setColourMinimum(0.5)
         spectrumComponent3.setColourMaximum(0.5)
         spectrummodule.endChange()

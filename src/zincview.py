@@ -19,6 +19,75 @@ from opencmiss.zinc.status import OK as ZINC_OK
 from opencmiss.zinc.field import Field
 from opencmiss.zinc.sceneviewer import Sceneviewer, Sceneviewerevent
 
+
+def ZincRegion_getMeshSize(region, dimension):
+    '''
+    Get the number of elements of given dimension in the region and all its child regions.
+    :return meshSize
+    '''
+    fieldmodule = region.getFieldmodule()
+    mesh = fieldmodule.findMeshByDimension(dimension)
+    meshSize = mesh.getSize()
+    # recurse children
+    child = region.getFirstChild()
+    while child.isValid():
+        meshSize = meshSize + ZincRegion_getMeshSize(child, dimension)
+        child = child.getNextSibling()
+    return meshSize
+
+def ZincRegion_getTimeRange(region):
+    '''
+    Recursively get the time range of finite element field parameters in region, or any child regions
+    :return minimum, maximum or None, None if no range
+    '''
+    minimum = None
+    maximum = None
+    # it's not easy to get the range of time; assume all nodes have same
+    # time range, and use timesequence from first node field with one.
+    # One problem is that often the last time represents the start of an
+    # increment, so the new range should be higher, which matters if animating
+    fieldmodule = region.getFieldmodule()
+    for fieldDomainType in [Field.DOMAIN_TYPE_NODES, Field.DOMAIN_TYPE_DATAPOINTS]:
+        nodeset = fieldmodule.findNodesetByFieldDomainType(fieldDomainType)
+        nodeiter = nodeset.createNodeiterator()
+        node = nodeiter.next()
+        if node.isValid:
+            fielditer = fieldmodule.createFielditerator()
+            field = fielditer.next()
+            while field.isValid():
+                feField = field.castFiniteElement()
+                if feField.isValid():
+                    nodetemplate = nodeset.createNodetemplate()
+                    nodetemplate.defineFieldFromNode(feField, node)
+                    timesequence = nodetemplate.getTimesequence(feField)
+                    if timesequence.isValid():
+                        count = timesequence.getNumberOfTimes()
+                        if count > 0:
+                            thisMinimum = timesequence.getTime(1)
+                            thisMaximum = timesequence.getTime(count)
+                            if minimum is None:
+                                minimum = thisMinimum
+                                maximum = thisMaximum
+                            elif thisMinimum < minimum:
+                                minimum = thisMinimum
+                            elif thisMaximum > maximum:
+                                maximum = thisMaximum
+                field = fielditer.next()
+    # recurse children
+    child = region.getFirstChild()
+    while child.isValid():
+        thisMinimum, thisMaximum = ZincRegion_getTimeRange(child)
+        if thisMinimum is not None:
+            if minimum is None:
+                minimum = thisMinimum
+                maximum = thisMaximum
+            elif thisMinimum < minimum:
+                minimum = thisMinimum
+            elif thisMaximum > maximum:
+                maximum = thisMaximum
+        child = child.getNextSibling()
+    return minimum, maximum
+
 class ZincView(QtGui.QMainWindow):
     '''
     Create a subclass of QMainWindow to get menu bar functionality.
@@ -31,6 +100,7 @@ class ZincView(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self, parent)
 
         self._context = ZincContext("ZincView");
+        self._rootRegion = self._context.createRegion()
         # set up standard materials and glyphs so we can use them elsewhere
         materialmodule = self._context.getMaterialmodule()
         materialmodule.defineStandardMaterials()
@@ -51,6 +121,7 @@ class ZincView(QtGui.QMainWindow):
         Set up additional sceneviewer notifiers for updating widgets
         '''
         sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
+        sceneviewer.setScene(self._rootRegion.getScene())
         self.ui.sceneviewerwidget.setSelectModeAll()
         self._sceneviewernotifier = sceneviewer.createSceneviewernotifier()
         self._sceneviewernotifier.setCallback(self._sceneviewerChange)
@@ -70,8 +141,6 @@ class ZincView(QtGui.QMainWindow):
         '''
         Clear all subregions, meshes, nodesets, fields and graphics
         '''
-        # GRC could replace by adding Context.setDefaultRegion() method to Zinc API
-        # or clear method
         msgBox = QtGui.QMessageBox()
         msgBox.setWindowTitle("ZincView")
         msgBox.setText("Clear will destroy the model and all graphics.")
@@ -81,32 +150,11 @@ class ZincView(QtGui.QMainWindow):
         result = msgBox.exec_()
         if result == QtGui.QMessageBox.Cancel:
             return
-        region = self._context.getDefaultRegion()
-        region.beginHierarchicalChange()
-        child = region.getFirstChild()
-        while child.isValid():
-            region.removeChild(child)
-            child = region.getFirstChild()
-        fieldmodule = region.getFieldmodule()
-        for dimension in [3, 2, 1]:
-            mesh = fieldmodule.findMeshByDimension(dimension)
-            mesh.destroyAllElements()
-        nodeset = fieldmodule.findNodesetByFieldDomainType(Field.DOMAIN_TYPE_NODES)
-        nodeset.destroyAllNodes()
-        nodeset = fieldmodule.findNodesetByFieldDomainType(Field.DOMAIN_TYPE_DATAPOINTS)
-        nodeset.destroyAllNodes()
-        iter = fieldmodule.createFielditerator()
-        field = iter.next()
-        while field.isValid():
-            if field.isManaged():
-                field.setManaged(False)
-                # must reset iterator
-                iter = fieldmodule.createFielditerator()
-            field = iter.next()
-        scene = region.getScene()
-        scene.removeAllGraphics()
+        self._rootRegion = self._context.createRegion()
+        self.ui.region_chooser.setRootRegion(self._rootRegion)
+        scene = self._rootRegion.getScene()
         self.ui.scene_editor.setScene(scene)
-        region.endHierarchicalChange()
+        self.ui.sceneviewerwidget.getSceneviewer().setScene(scene)
         self.allSettingsUpdate()
 
     def modelLoad(self):
@@ -122,17 +170,16 @@ class ZincView(QtGui.QMainWindow):
         # set current directory to path from file, to support scripts and fieldml with external resources
         path = os.path.dirname(fileName)
         os.chdir(path)
-        region = self._context.getDefaultRegion()
         if "scripts" in fileFilter:
             try:
                 f = open(fileName, 'r')
                 myfunctions = {}
                 exec f in myfunctions
-                success = myfunctions['loadModel'](self._context.getDefaultRegion())
+                success = myfunctions['loadModel'](self._rootRegion)
             except:
                 success = False
         else:
-            result = region.readFile(str(fileName))
+            result = self._rootRegion.readFile(str(fileName))
             success = (result == ZINC_OK)
         if not success:
             msgBox = QtGui.QMessageBox()
@@ -142,8 +189,10 @@ class ZincView(QtGui.QMainWindow):
             msgBox.setDefaultButton(QtGui.QMessageBox.Cancel)
             result = msgBox.exec_()
             return
-        scene = region.getScene()
+        scene = self._rootRegion.getScene()
+        # ensure scene editor graphics list is redisplayed, and widgets are updated
         self.ui.scene_editor.setScene(scene)
+        self.ui.region_chooser.setRootRegion(self._rootRegion)
         self.allSettingsUpdate()
         self.viewAll()
  
@@ -203,6 +252,10 @@ class ZincView(QtGui.QMainWindow):
         self.timeMaximumDisplay()
         self.timeTextDisplay()
         self.timeSliderDisplay()
+
+    def regionChanged(self, int):
+        region = self.ui.region_chooser.getRegion()
+        self.ui.scene_editor.setScene(region.getScene())
 
     def viewAll(self):
         '''
@@ -403,21 +456,19 @@ class ZincView(QtGui.QMainWindow):
         if totalDivisions[2] > totalSize1d:
             totalSize1d = totalDivisions[2]
 
-        fieldmodule = self._context.getDefaultRegion().getFieldmodule()
-
-        meshSize3d = fieldmodule.findMeshByDimension(3).getSize()
+        meshSize3d = ZincRegion_getMeshSize(self._rootRegion, 3)
         limit3d = limit
         if limit3d < meshSize3d:
             limit3d = meshSize3d
         overLimit3d = totalSize3d*meshSize3d > limit3d
 
-        meshSize2d = fieldmodule.findMeshByDimension(2).getSize()
+        meshSize2d = ZincRegion_getMeshSize(self._rootRegion, 2)
         limit2d = limit
         if limit2d < meshSize2d:
             limit2d = meshSize2d
         overLimit2d = totalSize2d*meshSize2d > limit2d
         
-        meshSize1d = fieldmodule.findMeshByDimension(1).getSize()
+        meshSize1d = ZincRegion_getMeshSize(self._rootRegion, 1)
         limit1d = limit
         if limit1d < meshSize1d:
             limit1d = meshSize1d
@@ -441,8 +492,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         Display the current tessellation minimum divisions
         '''
-        scene = self._context.getDefaultRegion().getScene()
-        tessellationmodule = scene.getTessellationmodule()
+        tessellationmodule = self._context.getTessellationmodule()
         tessellation = tessellationmodule.getDefaultTessellation()
         result, minimumDivisions = tessellation.getMinimumDivisions(3)
         self._displayScaleInteger(self.ui.tessellation_minimum_divisions_lineedit, minimumDivisions)
@@ -456,8 +506,7 @@ class ZincView(QtGui.QMainWindow):
             # pack to length 3 for comparing with old values
             while len(minimumDivisions) < 3:
                 minimumDivisions.append(minimumDivisions[-1])
-            scene = self._context.getDefaultRegion().getScene()
-            tessellationmodule = scene.getTessellationmodule()
+            tessellationmodule = self._context.getTessellationmodule()
             tessellation = tessellationmodule.getDefaultTessellation()
             result, oldMinimumDivisions = tessellation.getMinimumDivisions(3)
             if minimumDivisions != oldMinimumDivisions:
@@ -473,8 +522,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         Display the current tessellation refinement factors
         '''
-        scene = self._context.getDefaultRegion().getScene()
-        tessellationmodule = scene.getTessellationmodule()
+        tessellationmodule = self._context.getTessellationmodule()
         tessellation = tessellationmodule.getDefaultTessellation()
         result, refinementFactors = tessellation.getRefinementFactors(3)
         self._displayScaleInteger(self.ui.tessellation_refinement_factors_lineedit, refinementFactors)
@@ -488,8 +536,7 @@ class ZincView(QtGui.QMainWindow):
             # pack to length 3 for comparing with old values
             while len(refinementFactors) < 3:
                 refinementFactors.append(refinementFactors[-1])
-            scene = self._context.getDefaultRegion().getScene()
-            tessellationmodule = scene.getTessellationmodule()
+            tessellationmodule = self._context.getTessellationmodule()
             tessellation = tessellationmodule.getDefaultTessellation()
             result, oldRefinementFactors = tessellation.getRefinementFactors(3)
             if refinementFactors != oldRefinementFactors:
@@ -505,8 +552,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         Display the current tessellation circle divisions
         '''
-        scene = self._context.getDefaultRegion().getScene()
-        tessellationmodule = scene.getTessellationmodule()
+        tessellationmodule = self._context.getTessellationmodule()
         tessellation = tessellationmodule.getDefaultTessellation()
         circleDivisions = tessellation.getCircleDivisions()
         self.ui.tessellation_circle_divisions_lineedit.setText(unicode(circleDivisions))
@@ -517,8 +563,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         try:
             circleDivisions = int(self.ui.tessellation_circle_divisions_lineedit.text())
-            scene = self._context.getDefaultRegion().getScene()
-            tessellationmodule = scene.getTessellationmodule()
+            tessellationmodule = self._context.getTessellationmodule()
             # set circle divisions for all tessellation in module
             result = ZINC_OK
             tessellationmodule.beginChange()
@@ -643,41 +688,18 @@ class ZincView(QtGui.QMainWindow):
         pointattributes.setBaseSize([1.0,1.0,1.0])
         pointattributes.setGlyphOffset([-0.9,0.0,0.0])
         scene.endChange()
+        # ensure scene editor graphics list is redisplayed
         self.ui.scene_editor.setScene(scene)
 
     def timeAutorangeClicked(self):
         '''
         Set time min/max to time range of finite element field parameters.
         '''
-        region = self._context.getDefaultRegion()
-        # it's not easy to get the range of time; assume all nodes have same
-        # time range, and use timesequence from first node field with one
-        # One problem is that often the last time represents the start of an
-        # increment, so the new range should be higher, which matters if animating
-        fieldmodule = region.getFieldmodule()
-        nodeset = fieldmodule.findNodesetByFieldDomainType(Field.DOMAIN_TYPE_NODES)
-        nodeiter = nodeset.createNodeiterator()
-        node = nodeiter.next()
-        minimum = 0.0
-        maximum = 0.0
-        if node.isValid:
-            fielditer = fieldmodule.createFielditerator()
-            field = fielditer.next()
-            while field.isValid():
-                feField = field.castFiniteElement()
-                if feField.isValid():
-                    nodetemplate = nodeset.createNodetemplate()
-                    nodetemplate.defineFieldFromNode(feField, node)
-                    timesequence = nodetemplate.getTimesequence(feField)
-                    if timesequence.isValid():
-                        count = timesequence.getNumberOfTimes()
-                        if count > 0:
-                            minimum = timesequence.getTime(1)
-                            maximum = timesequence.getTime(count)
-                            break
-                field = fielditer.next()
-        scene = region.getScene()
-        timekeepermodule = scene.getTimekeepermodule()
+        minimum, maximum = ZincRegion_getTimeRange(self._rootRegion)
+        if minimum is None:
+            minimum = 0.0
+            maximum = 0.0
+        timekeepermodule = self._context.getTimekeepermodule()
         timekeeper = timekeepermodule.getDefaultTimekeeper()
         timekeeper.setMinimumTime(minimum)
         timekeeper.setMaximumTime(maximum)

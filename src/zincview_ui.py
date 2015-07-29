@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'zincview.ui'
 #
-# Created: Fri May 15 00:34:58 2015
+# Created: Wed Jul 29 15:47:13 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -141,6 +141,20 @@ class Ui_ZincView(object):
         self.verticalLayout_3.setSpacing(3)
         self.verticalLayout_3.setContentsMargins(3, 3, 3, 3)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.widget = QtGui.QWidget(self.graphics)
+        self.widget.setObjectName("widget")
+        self.formLayout_5 = QtGui.QFormLayout(self.widget)
+        self.formLayout_5.setContentsMargins(3, 3, 3, 3)
+        self.formLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.formLayout_5.setSpacing(3)
+        self.formLayout_5.setObjectName("formLayout_5")
+        self.region_label = QtGui.QLabel(self.widget)
+        self.region_label.setObjectName("region_label")
+        self.formLayout_5.setWidget(0, QtGui.QFormLayout.LabelRole, self.region_label)
+        self.region_chooser = RegionChooserWidget(self.widget)
+        self.region_chooser.setObjectName("region_chooser")
+        self.formLayout_5.setWidget(0, QtGui.QFormLayout.FieldRole, self.region_chooser)
+        self.verticalLayout_3.addWidget(self.widget)
         self.scene_editor = SceneEditorWidget(self.graphics)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -376,6 +390,7 @@ class Ui_ZincView(object):
         self.verticalLayout_6.addItem(spacerItem4)
         self.toolBox.addItem(self.data_colouring, "")
         self.output = QtGui.QWidget()
+        self.output.setGeometry(QtCore.QRect(0, 0, 228, 425))
         self.output.setObjectName("output")
         self.verticalLayout_9 = QtGui.QVBoxLayout(self.output)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
@@ -432,6 +447,7 @@ class Ui_ZincView(object):
         QtCore.QObject.connect(self.time_slider, QtCore.SIGNAL("valueChanged(int)"), ZincView.timeSliderChanged)
         QtCore.QObject.connect(self.save_image_button, QtCore.SIGNAL("clicked()"), ZincView.saveImageClicked)
         QtCore.QObject.connect(self.save_webgl_button, QtCore.SIGNAL("clicked()"), ZincView.saveWebGLClicked)
+        QtCore.QObject.connect(self.region_chooser, QtCore.SIGNAL("currentIndexChanged(int)"), ZincView.regionChanged)
         QtCore.QMetaObject.connectSlotsByName(ZincView)
 
     def retranslateUi(self, ZincView):
@@ -440,6 +456,7 @@ class Ui_ZincView(object):
         self.model_load_button.setText(QtGui.QApplication.translate("ZincView", "Load model...", None, QtGui.QApplication.UnicodeUTF8))
         self.model_clear_button.setText(QtGui.QApplication.translate("ZincView", "Clear model...", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.model), QtGui.QApplication.translate("ZincView", "Model", None, QtGui.QApplication.UnicodeUTF8))
+        self.region_label.setText(QtGui.QApplication.translate("ZincView", "Region:", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBox.setItemText(self.toolBox.indexOf(self.graphics), QtGui.QApplication.translate("ZincView", "Graphics", None, QtGui.QApplication.UnicodeUTF8))
         self.view_all_button.setText(QtGui.QApplication.translate("ZincView", "View All", None, QtGui.QApplication.UnicodeUTF8))
         self.perspective_checkbox.setText(QtGui.QApplication.translate("ZincView", "Perspective projection", None, QtGui.QApplication.UnicodeUTF8))
@@ -476,4 +493,5 @@ class Ui_ZincView(object):
         self.actionView_All.setText(QtGui.QApplication.translate("ZincView", "View All", None, QtGui.QApplication.UnicodeUTF8))
 
 from opencmiss.zincwidgets.sceneviewerwidget import SceneviewerWidget
+from regionchooserwidget import RegionChooserWidget
 from opencmiss.zincwidgets.sceneeditorwidget import SceneEditorWidget
