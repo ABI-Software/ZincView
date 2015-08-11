@@ -122,7 +122,6 @@ class ZincView(QtGui.QMainWindow):
         self.ui.sceneviewerwidget.setSelectModeAll()
         self.ui.sceneviewer_editor_widget.setSceneviewer(sceneviewer)
         self.allSettingsUpdate()
-        self.ui.save_image_button.setEnabled(False)
 
     def modelClear(self):
         '''
@@ -148,7 +147,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         Read model file or run script to read or define model.
         '''
-        fileNameTuple = QtGui.QFileDialog.getOpenFileName(self, "Load ZincView Model", "", "ZincView scripts (*.zincview.py);;Model Files (*.ex* *.fieldml)");
+        fileNameTuple = QtGui.QFileDialog.getOpenFileName(self, "Load ZincView Model", "", "ZincView scripts (*.zincview.py);;Model Files (*.ex* *.fieldml)")
         fileName = fileNameTuple[0]
         fileFilter = fileNameTuple[1]
         if not fileName:
@@ -379,7 +378,7 @@ class ZincView(QtGui.QMainWindow):
             iter = tessellationmodule.createTessellationiterator()
             tessellation = iter.next()
             while tessellation.isValid():
-                result = tessellation.setCircleDivisions(circleDivisions);
+                result = tessellation.setCircleDivisions(circleDivisions)
                 if ZINC_OK != result:
                     break # can't raise here otherwise no call to endChange()
                 tessellation = iter.next()
@@ -637,11 +636,15 @@ class ZincView(QtGui.QMainWindow):
         '''
         Save the view in the window to an image file.
         '''
-        # Not implemented
-        pass
-    
+        fileNameTuple = QtGui.QFileDialog.getSaveFileName(self, "Save image", "", "Image files (*.jpg *.png *.tif *.*)")
+        fileName = fileNameTuple[0]
+        if not fileName:
+            return
+        image = self.ui.sceneviewerwidget.grabFrameBuffer()
+        image.save(fileName)
+
     def exportSceneViewersettings(self, outputPrefix, numberOfResources):
-    	scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
+        scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
         si = scene.createStreaminformationScene()
         si.setIOFormat(si.IO_FORMAT_THREEJS)
         si.setIODataType(si.IO_FORMAT_THREEJS)
@@ -651,7 +654,7 @@ class ZincView(QtGui.QMainWindow):
         maximum = timekeeper.getMaximumTime()
         time_enabled = 0
         if (maximum - minimum) > 0.001:
-        	time_enabled = 1
+            time_enabled = 1
         sv = self.ui.sceneviewerwidget.getSceneviewer()
         sv.viewAll()
         nearPlane = sv.getNearClippingPlane()
@@ -662,7 +665,7 @@ class ZincView(QtGui.QMainWindow):
         export_f = open(outputName, "wb+")
         export_f.write(str(json.dumps(obj)))
         export_f.close()
-    
+
     def exportScene(self, outputPrefix):
         scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
         si = scene.createStreaminformationScene()
@@ -673,9 +676,9 @@ class ZincView(QtGui.QMainWindow):
         minimum = timekeeper.getMinimumTime()
         maximum = timekeeper.getMaximumTime()
         if (maximum - minimum) > 0.0:
-   	    	si.setInitialTime(minimum)
-   	    	si.setFinishTime(maximum)
-   	    	si.setNumberOfTimeSteps(51)
+            si.setInitialTime(minimum)
+            si.setFinishTime(maximum)
+            si.setNumberOfTimeSteps(51)
         number = si.getNumberOfResourcesRequired()
         i = 0
         srs =  []
@@ -690,7 +693,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         Save the view in the window to WebGL content.
         '''
-        fileNameTuple = QtGui.QFileDialog.getSaveFileName(self, "Specify prefix", "");
+        fileNameTuple = QtGui.QFileDialog.getSaveFileName(self, "Specify prefix", "")
         fileName = fileNameTuple[0]
         if not fileName:
             return
