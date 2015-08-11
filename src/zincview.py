@@ -7,7 +7,6 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 
-import math
 import os
 import sys
 import json
@@ -17,8 +16,6 @@ from opencmiss.zinc.context import Context as ZincContext
 from opencmiss.zinc.scenecoordinatesystem import *
 from opencmiss.zinc.status import OK as ZINC_OK
 from opencmiss.zinc.field import Field
-from opencmiss.zinc.sceneviewer import Sceneviewer, Sceneviewerevent
-
 
 def ZincRegion_getMeshSize(region, dimension):
     '''
@@ -99,7 +96,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         QtGui.QMainWindow.__init__(self, parent)
 
-        self._context = ZincContext("ZincView");
+        self._context = ZincContext("ZincView")
         self._rootRegion = self._context.createRegion()
         # set up standard materials and glyphs so we can use them elsewhere
         materialmodule = self._context.getMaterialmodule()
@@ -110,10 +107,10 @@ class ZincView(QtGui.QMainWindow):
         # Using composition to include the visual element of the GUI.
         self.ui = Ui_ZincView()
         self.ui.setupUi(self)
+        self.ui.toolBox.setCurrentIndex(0)
         self.ui.sceneviewerwidget.setContext(self._context)
         self.ui.sceneviewerwidget.graphicsInitialized.connect(self._graphicsInitialized)
         self.setWindowIcon(QtGui.QIcon(":/cmiss_icon.ico"))
-        self._maximumClippingDistance = 1
 
     def _graphicsInitialized(self):
         '''
@@ -123,20 +120,10 @@ class ZincView(QtGui.QMainWindow):
         sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
         sceneviewer.setScene(self._rootRegion.getScene())
         self.ui.sceneviewerwidget.setSelectModeAll()
-        self._sceneviewernotifier = sceneviewer.createSceneviewernotifier()
-        self._sceneviewernotifier.setCallback(self._sceneviewerChange)
-        self._maximumClippingDistance = sceneviewer.getFarClippingPlane()
+        self.ui.sceneviewer_editor_widget.setSceneviewer(sceneviewer)
         self.allSettingsUpdate()
         self.ui.save_image_button.setEnabled(False)
 
-    def _sceneviewerChange(self, event):
-        '''
-        Change to scene viewer; update view widgets if transformation changed
-        '''
-        changeFlags = event.getChangeFlags()
-        if changeFlags & Sceneviewerevent.CHANGE_FLAG_TRANSFORM:
-            self.viewSettingsUpdate()
- 
     def modelClear(self):
         '''
         Clear all subregions, meshes, nodesets, fields and graphics
@@ -195,7 +182,11 @@ class ZincView(QtGui.QMainWindow):
         self.ui.region_chooser.setRootRegion(self._rootRegion)
         self.allSettingsUpdate()
         self.viewAll()
- 
+
+    def toolBoxPageChanged(self, page):
+        # enable view widget updates only when looking at them
+        self.ui.sceneviewer_editor_widget.setEnableUpdates(page == 2)
+
     def _displayReal(self, widget, value):
         '''
         Display real value in a widget
@@ -219,30 +210,11 @@ class ZincView(QtGui.QMainWindow):
         if len(values) < 1:
             raise
         return values
- 
-    def _displayVector(self, widget, values, numberFormat = '{:.5g}'):
-        '''
-        Display real vector values in a widget
-        '''
-        newText = ", ".join(numberFormat.format(value) for value in values)
-        widget.setText(newText)
-
-    def _parseVector(self, widget):
-        '''
-        Return real vector from comma separated text in line edit widget
-        '''
-        text = widget.text()
-        values = [float(value) for value in text.split(',')]
-        if len(values) < 1:
-            raise
-        return values
 
     def allSettingsUpdate(self):
         '''
         Show initial values on widgets
         '''
-        self.viewSettingsUpdate()
-        self.backgroundColourDisplay()
         self.tessellationMinimumDivisionsDisplay()
         self.tessellationRefinementFactorsDisplay()
         self.tessellationCircleDivisionsDisplay()
@@ -261,170 +233,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         Change sceneviewer to see all of scene.
         '''
-        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
-        sceneviewer.viewAll()
-        self._maximumClippingDistance = sceneviewer.getFarClippingPlane()
-        self.viewSettingsUpdate()
-
-    def viewSettingsUpdate(self):
-        '''
-        Show the current scene viewer settings on the view widgets
-        '''
-        self.viewAngleDisplay()
-        self.eyePointDisplay()
-        self.lookatPointDisplay()
-        self.upVectorDisplay()
-        self.nearClippingDisplay()
-        self.farClippingDisplay()
-
-    def perspectiveStateChanged(self, state):
-        '''
-        Set perspective/parallel projection
-        '''
-        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
-        if (state):
-            sceneviewer.setProjectionMode(Sceneviewer.PROJECTION_MODE_PERSPECTIVE)
-        else:
-            sceneviewer.setProjectionMode(Sceneviewer.PROJECTION_MODE_PARALLEL)
-
-    def viewAngleDisplay(self):
-        '''
-        Display the current scene viewer diagonal view angle
-        '''
-        viewAngleRadians = self.ui.sceneviewerwidget.getSceneviewer().getViewAngle()
-        viewAngleDegrees = viewAngleRadians*180.0/math.pi
-        self._displayReal(self.ui.view_angle, viewAngleDegrees)
-
-    def viewAngleEntered(self):
-        '''
-        Set scene viewer diagonal view angle from value in the view angle widget
-        '''
-        try:
-            viewAngleRadians = float(self.ui.view_angle.text())*math.pi/180.0
-            if ZINC_OK != self.ui.sceneviewerwidget.getSceneviewer().setViewAngle(viewAngleRadians):
-                raise
-        except:
-            print "Invalid view angle"
-        self.viewAngleDisplay()
-
-    def setLookatParametersNonSkew(self):
-        '''
-        Set eye, lookat point and up vector simultaneous in non-skew projection
-        '''
-        eye = self._parseVector(self.ui.eye_point)
-        lookat = self._parseVector(self.ui.lookat_point)
-        up_vector = self._parseVector(self.ui.up_vector)
-        if ZINC_OK != self.ui.sceneviewerwidget.getSceneviewer().setLookatParametersNonSkew(eye, lookat, up_vector):
-            raise
-
-    def eyePointDisplay(self):
-        '''
-        Display the current scene viewer eye point
-        '''
-        result, eye = self.ui.sceneviewerwidget.getSceneviewer().getEyePosition()
-        self._displayVector(self.ui.eye_point, eye)
-
-    def eyePointEntered(self):
-        '''
-        Set scene viewer wyw point from text in widget
-        '''
-        try:
-            self.setLookatParametersNonSkew()
-        except:
-            print "Invalid eye point"
-            self.eyePositionDisplay()
-
-    def lookatPointDisplay(self):
-        '''
-        Display the current scene viewer lookat point
-        '''
-        result, lookat = self.ui.sceneviewerwidget.getSceneviewer().getLookatPosition()
-        self._displayVector(self.ui.lookat_point, lookat)
-
-    def lookatPointEntered(self):
-        '''
-        Set scene viewer lookat point from text in widget
-        '''
-        try:
-            self.setLookatParametersNonSkew()
-        except:
-            print "Invalid lookat point"
-            self.lookatPositionDisplay()
-
-    def upVectorDisplay(self):
-        '''
-        Display the current scene viewer eye point
-        '''
-        result, up_vector = self.ui.sceneviewerwidget.getSceneviewer().getUpVector()
-        self._displayVector(self.ui.up_vector, up_vector)
-
-    def upVectorEntered(self):
-        '''
-        Set scene viewer up vector from text in widget
-        '''
-        try:
-            self.setLookatParametersNonSkew()
-        except:
-            print "Invalid up vector"
-            self.upVectorDisplay()
-
-    def nearClippingDisplay(self):
-        '''
-        Display the current near clipping plane distance
-        '''
-        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
-        near = sceneviewer.getNearClippingPlane()
-        value = int(10001.0*near/self._maximumClippingDistance) - 1
-        # don't want signal for my change
-        self.ui.near_clipping_slider.blockSignals(True)
-        self.ui.near_clipping_slider.setValue(value)
-        self.ui.near_clipping_slider.blockSignals(False)
-
-    def nearClippingChanged(self, value):
-        '''
-        Set near clipping plane distance from slider
-        '''
-        near = (value + 1)*self._maximumClippingDistance/10001.0
-        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
-        sceneviewer.setNearClippingPlane(near)
-
-    def farClippingDisplay(self):
-        '''
-        Display the current far clipping plane distance
-        '''
-        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
-        value = int(10001.0*sceneviewer.getFarClippingPlane()/self._maximumClippingDistance) - 1
-        self.ui.far_clipping_slider.blockSignals(True)
-        self.ui.far_clipping_slider.setValue(value)
-        self.ui.far_clipping_slider.blockSignals(False)
-
-    def farClippingChanged(self, value):
-        '''
-        Set far clipping plane distance from slider
-        '''
-        far = (value + 1)*self._maximumClippingDistance/10001.0
-        sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
-        sceneviewer.setFarClippingPlane(far)
-
-    def backgroundColourDisplay(self):
-        '''
-        Display the current scene viewer eye point
-        '''
-        result, colourRGB = self.ui.sceneviewerwidget.getSceneviewer().getBackgroundColourRGB()
-        self._displayVector(self.ui.background_colour, colourRGB)
-
-    def backgroundColourEntered(self):
-        '''
-        Set scene viewer diagonal view angle from value in the view angle widget
-        '''
-        try:
-            colourRGB = self._parseVector(self.ui.background_colour)
-            sceneviewer = self.ui.sceneviewerwidget.getSceneviewer()
-            if ZINC_OK != sceneviewer.setBackgroundColourRGB(colourRGB):
-                raise
-        except:
-            print "Invalid background colour"
-        self.backgroundColourDisplay()
+        self.ui.sceneviewer_editor_widget.viewAll()
 
     def _checkTessellationDivisions(self, minimumDivisions, refinementFactors, widget):
         '''

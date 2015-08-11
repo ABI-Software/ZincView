@@ -162,7 +162,7 @@ QToolBox {
             <enum>QFrame::Plain</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <property name="tabSpacing">
             <number>2</number>
@@ -250,7 +250,7 @@ QToolBox {
               <number>3</number>
              </property>
              <item>
-              <widget class="QWidget" name="widget" native="true">
+              <widget class="QWidget" name="region_widget" native="true">
                <layout class="QFormLayout" name="formLayout_5">
                 <property name="horizontalSpacing">
                  <number>3</number>
@@ -291,8 +291,8 @@ QToolBox {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>207</width>
-              <height>443</height>
+              <width>228</width>
+              <height>425</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -305,190 +305,14 @@ QToolBox {
              <string>View</string>
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="spacing">
+              <number>3</number>
+             </property>
+             <property name="margin">
+              <number>3</number>
+             </property>
              <item>
-              <widget class="QPushButton" name="view_all_button">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>View All</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="perspective_checkbox">
-               <property name="text">
-                <string>Perspective projection</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="view_angle_label">
-               <property name="text">
-                <string>View angle:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="view_angle">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="eye_point_label">
-               <property name="text">
-                <string>Eye point:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="eye_point">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="lookat_point_label">
-               <property name="text">
-                <string>Look at point:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="lookat_point">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="up_vector_label">
-               <property name="text">
-                <string>Up vector:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="up_vector">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="clipping_planes_groupbox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="title">
-                <string>Clipping planes:</string>
-               </property>
-               <layout class="QFormLayout" name="formLayout">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="near_clipping_label">
-                  <property name="text">
-                   <string>Near:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="far_clipping_label">
-                  <property name="text">
-                   <string>Far:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QSlider" name="near_clipping_slider">
-                  <property name="maximum">
-                   <number>10000</number>
-                  </property>
-                  <property name="pageStep">
-                   <number>100</number>
-                  </property>
-                  <property name="tracking">
-                   <bool>true</bool>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QSlider" name="far_clipping_slider">
-                  <property name="maximum">
-                   <number>10000</number>
-                  </property>
-                  <property name="pageStep">
-                   <number>100</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="background_colour_label">
-               <property name="text">
-                <string>Background colour R, G, B:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="background_colour">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
+              <widget class="SceneviewerEditorWidget" name="sceneviewer_editor_widget" native="true"/>
              </item>
             </layout>
            </widget>
@@ -822,27 +646,17 @@ QToolBox {
   <customwidget>
    <class>RegionChooserWidget</class>
    <extends>QComboBox</extends>
-   <header>regionchooserwidget.h</header>
+   <header>opencmiss/zincwidgets/regionchooserwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SceneviewerEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>opencmiss/zincwidgets/sceneviewereditorwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>view_angle</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ZincView</receiver>
-   <slot>viewAngleEntered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>147</x>
-     <y>137</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>348</x>
-     <y>283</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>model_load_button</sender>
    <signal>clicked()</signal>
@@ -856,134 +670,6 @@ QToolBox {
     <hint type="destinationlabel">
      <x>348</x>
      <y>283</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>view_all_button</sender>
-   <signal>clicked()</signal>
-   <receiver>ZincView</receiver>
-   <slot>viewAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>47</x>
-     <y>100</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>348</x>
-     <y>283</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>eye_point</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ZincView</receiver>
-   <slot>eyePointEntered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>187</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>348</x>
-     <y>337</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lookat_point</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ZincView</receiver>
-   <slot>lookatPointEntered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>237</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>348</x>
-     <y>337</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>up_vector</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ZincView</receiver>
-   <slot>upVectorEntered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>287</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>348</x>
-     <y>337</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>perspective_checkbox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>ZincView</receiver>
-   <slot>perspectiveStateChanged(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>86</x>
-     <y>136</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>348</x>
-     <y>337</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>near_clipping_slider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>ZincView</receiver>
-   <slot>nearClippingChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>131</x>
-     <y>386</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>449</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>far_clipping_slider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>ZincView</receiver>
-   <slot>farClippingChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>131</x>
-     <y>416</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>449</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>background_colour</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ZincView</receiver>
-   <slot>backgroundColourEntered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>111</x>
-     <y>437</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>449</x>
-     <y>299</y>
     </hint>
    </hints>
   </connection>
@@ -1307,19 +993,25 @@ QToolBox {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>toolBox</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>ZincView</receiver>
+   <slot>toolBoxPageChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>330</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>modelLoad()</slot>
-  <slot>viewAll()</slot>
-  <slot>viewAngleEntered()</slot>
-  <slot>lookatPointEntered()</slot>
-  <slot>eyePointEntered()</slot>
-  <slot>upVectorEntered()</slot>
-  <slot>perspectiveStateChanged(bool)</slot>
-  <slot>skewProjectionSet()</slot>
-  <slot>nearClippingChanged(int)</slot>
-  <slot>farClippingChanged(int)</slot>
-  <slot>backgroundColourEntered()</slot>
   <slot>tessellationMinimumDivisionsEntered()</slot>
   <slot>tessellationRefinementFactorsEntered()</slot>
   <slot>tessellationCircleDivisionsEntered()</slot>
@@ -1340,5 +1032,6 @@ QToolBox {
   <slot>saveImageClicked()</slot>
   <slot>saveWebGLClicked()</slot>
   <slot>regionChanged(int)</slot>
+  <slot>toolBoxPageChanged(int)</slot>
  </slots>
 </ui>
