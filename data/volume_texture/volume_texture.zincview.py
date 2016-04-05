@@ -11,7 +11,7 @@ from opencmiss.zinc.element import Element
 from opencmiss.zinc.field import Field
 from opencmiss.zinc.glyph import Glyph
 from opencmiss.zinc.region import Region
-from opencmiss.zinc.status import OK as ZINC_OK
+from opencmiss.zinc.result import RESULT_OK
 from opencmiss.zinc.streamregion import StreaminformationRegion
 from opencmiss.zinc.spectrum import Spectrumcomponent
 
@@ -20,12 +20,17 @@ def loadModel(region):
     sir.createStreamresourceFile("texture_block.exelem")
     sir.createStreamresourceFile("texture_block.exnode")
     result = region.read(sir)
+    if result != RESULT_OK:
+        print("Failed to read texture_block")
+        return False
     
     sir = region.createStreaminformationRegion()
     sir.createStreamresourceFile("iso_block.exelem")
     sir.createStreamresourceFile("iso_block.exnode")
     result = region.read(sir)
-
+    if result != RESULT_OK:
+        print("Failed to read iso_block")
+        return False
     scene = region.getScene()
        
     field_module = region.getFieldmodule()
