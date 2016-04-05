@@ -11,7 +11,7 @@ from opencmiss.zinc.element import Element
 from opencmiss.zinc.field import Field
 from opencmiss.zinc.glyph import Glyph
 from opencmiss.zinc.region import Region
-from opencmiss.zinc.status import OK as ZINC_OK
+from opencmiss.zinc.result import RESULT_OK
 from opencmiss.zinc.streamregion import StreaminformationRegion
 from opencmiss.zinc.spectrum import Spectrumcomponent
 
@@ -29,8 +29,8 @@ def loadModel(region):
         sir.setResourceAttributeReal(fr, StreaminformationRegion.ATTRIBUTE_TIME, i/50.0)
     sir.createStreamresourceFile("heart.exelem")
     result = region.read(sir)
-    if result != ZINC_OK:
-        print "failed to read"
+    if result != RESULT_OK:
+        print("Failed to read model file")
         return False
     scene = region.getScene()
     timekeepermodule = scene.getTimekeepermodule()

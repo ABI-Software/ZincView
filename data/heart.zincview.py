@@ -11,7 +11,7 @@ from opencmiss.zinc.element import Element
 from opencmiss.zinc.field import Field
 from opencmiss.zinc.glyph import Glyph
 from opencmiss.zinc.region import Region
-from opencmiss.zinc.status import OK as ZINC_OK
+from opencmiss.zinc.result import RESULT_OK
 #from opencmiss.zinc.streamregion import StreaminformationRegion
 
 def getDefaultCoordinateField(fieldmodule):
@@ -33,7 +33,7 @@ def loadModel(region):
     a valid ZincView script
     '''
     result = region.readFile('heart.exfile')
-    if result != ZINC_OK:
+    if result != RESULT_OK:
         return False
     scene = region.getScene()
     scene.beginChange()

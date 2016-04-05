@@ -14,7 +14,7 @@ from PySide import QtGui, QtCore
 from zincview_ui import Ui_ZincView
 from opencmiss.zinc.context import Context as ZincContext
 from opencmiss.zinc.scenecoordinatesystem import *
-from opencmiss.zinc.status import OK as ZINC_OK
+from opencmiss.zinc.result import RESULT_OK
 from opencmiss.zinc.field import Field
 
 def ZincRegion_getMeshSize(region, dimension):
@@ -148,29 +148,38 @@ class ZincView(QtGui.QMainWindow):
         Read model file or run script to read or define model.
         '''
         fileNameTuple = QtGui.QFileDialog.getOpenFileName(self, "Load ZincView Model", "", "ZincView scripts (*.zincview.py);;Model Files (*.ex* *.fieldml)")
-        fileName = fileNameTuple[0]
+        inputScriptFileName = fileNameTuple[0]
         fileFilter = fileNameTuple[1]
-        if not fileName:
+        if not inputScriptFileName:
             return
-        #print "reading file", fileName, ", filter", fileFilter
+        #print("reading file " + inputScriptFileName + ", filter " + fileFilter)
         # set current directory to path from file, to support scripts and fieldml with external resources
-        path = os.path.dirname(fileName)
+        path = os.path.dirname(inputScriptFileName)
         os.chdir(path)
         if "scripts" in fileFilter:
             try:
-                f = open(fileName, 'r')
-                myfunctions = {}
-                exec f in myfunctions
-                success = myfunctions['loadModel'](self._rootRegion)
+                # f = open(inputScriptFileName, 'r')
+                # myfunctions = {}
+                # exec f in myfunctions
+                # success = myfunctions['loadModel'](self._rootRegion)
+                sys.path.append(path)
+                _, filename = os.path.split(inputScriptFileName)
+                mod_name, _ = os.path.splitext(filename)
+                import importlib.util
+                spec = importlib.util.spec_from_file_location(mod_name, inputScriptFileName)
+                foo = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(foo)
+
+                success = foo.loadModel(self._rootRegion)
             except:
                 success = False
         else:
-            result = self._rootRegion.readFile(str(fileName))
-            success = (result == ZINC_OK)
+            result = self._rootRegion.readFile(inputScriptFileName)
+            success = (result == RESULT_OK)
         if not success:
             msgBox = QtGui.QMessageBox()
             msgBox.setWindowTitle("ZincView")
-            msgBox.setText("Error reading file: " + fileName)
+            msgBox.setText("Error reading file: " + inputScriptFileName)
             msgBox.setStandardButtons(QtGui.QMessageBox.Ok)
             msgBox.setDefaultButton(QtGui.QMessageBox.Cancel)
             result = msgBox.exec_()
@@ -190,7 +199,7 @@ class ZincView(QtGui.QMainWindow):
         '''
         Display real value in a widget
         '''
-        newText = unicode('{:.5g}'.format(value))
+        newText = '{:.5g}'.format(value)
         widget.setText(newText)
  
     def _displayScaleInteger(self, widget, values, numberFormat = '{:d}'):
@@ -320,10 +329,10 @@ class ZincView(QtGui.QMainWindow):
             if minimumDivisions != oldMinimumDivisions:
                 result, refinementFactors = tessellation.getRefinementFactors(3)
                 if self._checkTessellationDivisions(minimumDivisions, refinementFactors, self.ui.tessellation_minimum_divisions_lineedit):
-                    if ZINC_OK != tessellation.setMinimumDivisions(minimumDivisions):
+                    if RESULT_OK != tessellation.setMinimumDivisions(minimumDivisions):
                         raise
         except:
-            print "Invalid tessellation minimum divisions"
+            print("Invalid tessellation minimum divisions")
         #self.tessellationMinimumDivisionsDisplay()
 
     def tessellationRefinementFactorsDisplay(self):
@@ -350,10 +359,10 @@ class ZincView(QtGui.QMainWindow):
             if refinementFactors != oldRefinementFactors:
                 result, minimumDivisions = tessellation.getMinimumDivisions(3)
                 if self._checkTessellationDivisions(minimumDivisions, refinementFactors, self.ui.tessellation_refinement_factors_lineedit):
-                    if ZINC_OK != tessellation.setRefinementFactors(refinementFactors):
+                    if RESULT_OK != tessellation.setRefinementFactors(refinementFactors):
                         raise
         except:
-            print "Invalid tessellation refinement factors"
+            print("Invalid tessellation refinement factors")
         #self.tessellationRefinementFactorsDisplay()
 
     def tessellationCircleDivisionsDisplay(self):
@@ -363,7 +372,7 @@ class ZincView(QtGui.QMainWindow):
         tessellationmodule = self._context.getTessellationmodule()
         tessellation = tessellationmodule.getDefaultTessellation()
         circleDivisions = tessellation.getCircleDivisions()
-        self.ui.tessellation_circle_divisions_lineedit.setText(unicode(circleDivisions))
+        self.ui.tessellation_circle_divisions_lineedit.setText(str(circleDivisions))
 
     def tessellationCircleDivisionsEntered(self):
         '''
@@ -373,20 +382,20 @@ class ZincView(QtGui.QMainWindow):
             circleDivisions = int(self.ui.tessellation_circle_divisions_lineedit.text())
             tessellationmodule = self._context.getTessellationmodule()
             # set circle divisions for all tessellation in module
-            result = ZINC_OK
+            result = RESULT_OK
             tessellationmodule.beginChange()
             iter = tessellationmodule.createTessellationiterator()
             tessellation = iter.next()
             while tessellation.isValid():
                 result = tessellation.setCircleDivisions(circleDivisions)
-                if ZINC_OK != result:
+                if RESULT_OK != result:
                     break # can't raise here otherwise no call to endChange()
                 tessellation = iter.next()
             tessellationmodule.endChange()
-            if ZINC_OK != result:
+            if RESULT_OK != result:
                 raise
         except:
-            print "Invalid tessellation circle divisions"
+            print("Invalid tessellation circle divisions")
         #self.tessellationCircleDivisionsDisplay()
 
     def perturbLinesStateChanged(self, state):
@@ -436,10 +445,10 @@ class ZincView(QtGui.QMainWindow):
             spectrummodule = scene.getSpectrummodule()
             spectrum = spectrummodule.getDefaultSpectrum()
             spectrumcomponent = spectrum.getFirstSpectrumcomponent()
-            if ZINC_OK != spectrumcomponent.setRangeMinimum(minimum):
+            if RESULT_OK != spectrumcomponent.setRangeMinimum(minimum):
                 raise
         except:
-            print "Invalid spectrum minimum"
+            print("Invalid spectrum minimum")
         self.spectrumMinimumDisplay()
 
     def spectrumMaximumDisplay(self):
@@ -463,10 +472,10 @@ class ZincView(QtGui.QMainWindow):
             spectrummodule = scene.getSpectrummodule()
             spectrum = spectrummodule.getDefaultSpectrum()
             spectrumcomponent = spectrum.getFirstSpectrumcomponent()
-            if ZINC_OK != spectrumcomponent.setRangeMaximum(maximum):
+            if RESULT_OK != spectrumcomponent.setRangeMaximum(maximum):
                 raise
         except:
-            print "Invalid spectrum maximum"
+            print("Invalid spectrum maximum")
         self.spectrumMaximumDisplay()
 
     def spectrumAddColourBarClicked(self):
@@ -540,10 +549,10 @@ class ZincView(QtGui.QMainWindow):
             scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
             timekeepermodule = scene.getTimekeepermodule()
             timekeeper = timekeepermodule.getDefaultTimekeeper()
-            if ZINC_OK != timekeeper.setMinimumTime(minimum):
+            if RESULT_OK != timekeeper.setMinimumTime(minimum):
                 raise
         except:
-            print "Invalid minimum time"
+            print("Invalid minimum time")
         self.timeMinimumDisplay()
 
     def timeMaximumDisplay(self):
@@ -565,10 +574,10 @@ class ZincView(QtGui.QMainWindow):
             scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
             timekeepermodule = scene.getTimekeepermodule()
             timekeeper = timekeepermodule.getDefaultTimekeeper()
-            if ZINC_OK != timekeeper.setMaximumTime(maximum):
+            if RESULT_OK != timekeeper.setMaximumTime(maximum):
                 raise
         except:
-            print "Invalid maximum time"
+            print("Invalid maximum time")
         self.timeMaximumDisplay()
 
     def timeTextDisplay(self):
@@ -590,11 +599,11 @@ class ZincView(QtGui.QMainWindow):
             scene = self.ui.sceneviewerwidget.getSceneviewer().getScene()
             timekeepermodule = scene.getTimekeepermodule()
             timekeeper = timekeepermodule.getDefaultTimekeeper()
-            if ZINC_OK != timekeeper.setTime(time):
+            if RESULT_OK != timekeeper.setTime(time):
                 raise
             self.timeSliderDisplay()
         except:
-            print "Invalid current time"
+            print("Invalid current time")
         self.timeTextDisplay()
 
     def timeSliderDisplay(self):
@@ -663,7 +672,7 @@ class ZincView(QtGui.QMainWindow):
         obj = { "nearPlane": nearPlane, "farPlane": farPlane, "eyePosition": eyePos, "targetPosition": lookat, "upVector": upVector, "numberOfResources": numberOfResources, "timeEnabled" : time_enabled}
         outputName = outputPrefix + "_view.json"
         export_f = open(outputName, "wb+")
-        export_f.write(str(json.dumps(obj)))
+        export_f.write(json.dumps(obj))
         export_f.close()
 
     def exportScene(self, outputPrefix):
@@ -697,11 +706,11 @@ class ZincView(QtGui.QMainWindow):
         fileName = fileNameTuple[0]
         if not fileName:
             return
-        #print "reading file", fileName, ", filter", fileFilter
+        #print("reading file", fileName, ", filter", fileFilter)
         # set current directory to path from file, to support scripts and fieldml with external resources
         # Not implemented
-        numberOfResources = self.exportScene(str(fileName))
-        self.exportSceneViewersettings(str(fileName), numberOfResources)
+        numberOfResources = self.exportScene(fileName)
+        self.exportSceneViewersettings(fileName, numberOfResources)
 
 
 # main start
